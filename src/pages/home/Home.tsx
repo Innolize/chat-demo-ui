@@ -1,10 +1,14 @@
+import Cookies from 'js-cookie';
+
+import { ChatLayout } from '@/components/chat/chat-layout';
+
 export default function Home() {
+	const layout = Cookies.get('react-resizable-panels:layout');
+	const defaultLayout = layout ? JSON.parse(layout) : undefined;
+
 	return (
-		<div className="flex items-center justify-center h-screen">
-			{/* data-test? https://docs.cypress.io/guides/references/best-practices */}
-			<h1 className="text-3xl font-bold underline" data-test="home-msg">
-				This is the homepage!
-			</h1>
+		<div className="flex items-center justify-center max-w-5xl border">
+			<ChatLayout defaultLayout={defaultLayout} navCollapsedSize={8} />
 		</div>
 	);
 }
