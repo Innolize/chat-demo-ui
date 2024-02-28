@@ -6,18 +6,18 @@ import ChatTopbar from './chat-topbar';
 import { Message, UserData } from '@/data';
 
 interface ChatProps {
-	messages?: Message[];
+	initialMessages?: Message[];
 	selectedUser: UserData;
 	isMobile: boolean;
 }
 
-export function Chat({ messages, selectedUser, isMobile }: ChatProps) {
-	const [messagesState, setMessages] = React.useState<Message[]>(
-		messages ?? [],
+export function Chat({ initialMessages, selectedUser, isMobile }: ChatProps) {
+	const [messages, setMessages] = React.useState<Message[]>(
+		initialMessages || [],
 	);
 
 	const sendMessage = (newMessage: Message) => {
-		setMessages([...messagesState, newMessage]);
+		setMessages([...messages, newMessage]);
 	};
 
 	return (
@@ -25,7 +25,7 @@ export function Chat({ messages, selectedUser, isMobile }: ChatProps) {
 			<ChatTopbar selectedUser={selectedUser} />
 
 			<ChatList
-				messages={messagesState}
+				messages={messages}
 				selectedUser={selectedUser}
 				sendMessage={sendMessage}
 				isMobile={isMobile}

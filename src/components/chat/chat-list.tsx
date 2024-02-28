@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 
 import { Avatar, AvatarImage } from '../ui/avatar';
 import ChatBottombar from './chat-bottombar';
 
+import { SocketContext } from '@/context/SocketContext';
 import { Message, UserData } from '@/data';
 import { cn } from '@/lib/utils';
+import { SUBSCRIBE } from '@/service/websocket/subscribe';
 
 interface ChatListProps {
 	messages?: Message[];
@@ -20,6 +22,8 @@ export function ChatList({
 	sendMessage,
 	isMobile,
 }: ChatListProps) {
+	const socket = useContext(SocketContext);
+
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 
 	React.useEffect(() => {
@@ -28,6 +32,15 @@ export function ChatList({
 				messagesContainerRef.current.scrollHeight;
 		}
 	}, [messages]);
+
+	useEffect(() => {
+		socket.on(SUBSCRIBE.NEW_CHAT_MESSAGE, (message: Message) => {
+			sendMessage(message);
+		});
+		return () => {
+			socket.removeListener(SUBSCRIBE.NEW_CHAT_MESSAGE);
+		};
+	}, [socket, selectedUser, sendMessage]);
 
 	return (
 		<div className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col">
@@ -91,7 +104,7 @@ export function ChatList({
 					))}
 				</AnimatePresence>
 			</div>
-			<ChatBottombar sendMessage={sendMessage} isMobile={isMobile} />
+			<ChatBottombar isMobile={isMobile} />
 		</div>
 	);
 }
