@@ -5,10 +5,9 @@ import {
 	Paperclip,
 	PlusCircle,
 	SendHorizontal,
-	Smile,
 	ThumbsUp,
 } from 'lucide-react';
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { EmojiPicker } from '../emoji-picker';
@@ -16,20 +15,19 @@ import { buttonVariants } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Textarea } from '../ui/textarea';
 
+import { SocketContext } from '@/context/SocketContext';
 import { Message, loggedInUserData } from '@/data';
 import { cn } from '@/lib/utils';
+import { EMIT } from '@/service/websocket/emit';
 
 interface ChatBottombarProps {
-	sendMessage: (newMessage: Message) => void;
 	isMobile: boolean;
 }
 
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
-export default function ChatBottombar({
-	sendMessage,
-	isMobile,
-}: ChatBottombarProps) {
+export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
+	const socket = useContext(SocketContext);
 	const [message, setMessage] = useState('');
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,8 +42,11 @@ export default function ChatBottombar({
 			avatar: loggedInUserData.avatar,
 			message: '👍',
 		};
-		sendMessage(newMessage);
 		setMessage('');
+		socket.emit(EMIT.SEND_MESSAGE, {
+			message: newMessage.message,
+			chat_id: '1',
+		});
 	};
 
 	const handleSend = () => {
@@ -56,8 +57,12 @@ export default function ChatBottombar({
 				avatar: loggedInUserData.avatar,
 				message: message.trim(),
 			};
-			sendMessage(newMessage);
+
 			setMessage('');
+			socket.emit(EMIT.SEND_MESSAGE, {
+				message: newMessage.message,
+				chat_id: '1',
+			});
 
 			if (inputRef.current) {
 				inputRef.current.focus();
