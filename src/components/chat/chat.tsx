@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { ChatList } from './chat-list';
 import ChatTopbar from './chat-topbar';
@@ -6,15 +6,22 @@ import ChatTopbar from './chat-topbar';
 import { Message, UserData } from '@/data';
 
 interface ChatProps {
-	initialMessages?: Message[];
 	selectedUser: UserData;
 	isMobile: boolean;
 }
 
-export function Chat({ initialMessages, selectedUser, isMobile }: ChatProps) {
-	const [messages, setMessages] = React.useState<Message[]>(
-		initialMessages || [],
-	);
+export function Chat({ selectedUser, isMobile }: ChatProps) {
+	const [messages, setMessages] = React.useState<Message[]>([]);
+
+	useEffect(() => {
+		const getChatData = async () => {
+			const response = await fetch(`/api/chat/user/${selectedUser.id}`);
+			const data = await response.json();
+			setMessages(data.messages);
+		};
+
+		getChatData();
+	}, []);
 
 	const sendMessage = (newMessage: Message) => {
 		setMessages([...messages, newMessage]);

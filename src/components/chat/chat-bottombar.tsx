@@ -16,7 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Textarea } from '../ui/textarea';
 
 import { SocketContext } from '@/context/SocketContext';
-import { Message, loggedInUserData } from '@/data';
+import { CreateMessage, Message, loggedInUserData } from '@/data';
 import { cn } from '@/lib/utils';
 import { EMIT } from '@/service/websocket/emit';
 
@@ -36,25 +36,22 @@ export default function ChatBottombar({ isMobile }: ChatBottombarProps) {
 	};
 
 	const handleThumbsUp = () => {
-		const newMessage: Message = {
-			id: message.length + 1,
-			name: loggedInUserData.name,
-			avatar: loggedInUserData.avatar,
+		const newMessage: CreateMessage = {
+			chat_id: 1,
+			user_id: 1,
 			message: '👍',
 		};
 		setMessage('');
 		socket.emit(EMIT.SEND_MESSAGE, {
-			message: newMessage.message,
-			chat_id: '1',
+			newMessage,
 		});
 	};
 
 	const handleSend = () => {
 		if (message.trim()) {
-			const newMessage: Message = {
-				id: message.length + 1,
-				name: loggedInUserData.name,
-				avatar: loggedInUserData.avatar,
+			const newMessage: CreateMessage = {
+				chat_id: 1,
+				user_id: 1,
 				message: message.trim(),
 			};
 

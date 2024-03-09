@@ -122,7 +122,11 @@ export function Sidebar({ links, isCollapsed, isMobile }: SidebarProps) {
 								<span>{link.name}</span>
 								{link.messages.length > 0 && (
 									<span className="text-zinc-300 text-xs truncate ">
-										{link.messages[link.messages.length - 1].name.split(' ')[0]}
+										{
+											link.messages[link.messages.length - 1].user?.name?.split(
+												' ',
+											)[0]
+										}
 										: {link.messages[link.messages.length - 1].message}
 									</span>
 								)}
